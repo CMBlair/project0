@@ -58,3 +58,18 @@ class Student():
                 print(tabulate(myresult, headers=['ID', 'Name']))
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
+    def showStudentInformation(self):
+        try:
+            with connection.cursor() as cursor:
+                self.getAllStudents(self)
+                id = input("Enter the ID of the student you wish to know more about: ")
+                sql = 'SELECT courses.Course_ID, courses.Course_Name FROM major_courses JOIN courses WHERE courses.Course_ID = major_courses.Course_ID AND major_courses.id = (SELECT major FROM student WHERE id = %s)'
+                cursor.execute(sql, (id))
+                myresult = cursor.fetchall()
+                print(tabulate(myresult, headers=['Course ID', 'Course Name']))
+        except pymysql.Error as e:
+            print(f'There was an error retrieving your request. {e}')
+
+Student.showStudentInformation(Student)
+
+                
