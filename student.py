@@ -10,7 +10,7 @@ connection = pymysql.connect(host='localhost',
 cursor = connection.cursor()
 
 
-class Student():
+class Student(object):
     def createStudent(name, major):
         try:
             with connection.cursor() as cursor:
@@ -38,12 +38,15 @@ class Student():
     def updateStudentInfo(self):
         try:
             with connection.cursor() as cursor:
-                self.getAllStudents(self)
+                self.getAllStudentsAndMajors(self)
                 name = input("Enter the ID of the student you want to update:  ")
+                self.getAllMajors(self)
                 major = input("Enter the new major ID (1-16):  ")
                 sql = 'UPDATE student SET major = %s WHERE id = %s'
                 cursor.execute(sql, (major, name))
                 connection.commit()
+                name = self.getStudentName(name)
+                self = self.getStudentMajor(major)
                 print(f"student {name}'s major  has been updated to {major}.")
         except pymysql.Error as e:
             print(f"There was an error updating the student {e}")
@@ -63,6 +66,15 @@ class Student():
                 sql = 'SELECT id, name FROM student'
                 cursor.execute(sql)
                 print("The current List of Students: ")
+                myresult = cursor.fetchall()
+                print(tabulate(myresult, headers=['ID', 'Name']))
+        except pymysql.Error as e:
+            print(f'There was an error retrieving your request. {e}')
+    def getAllMajors(self):
+        try:
+            with connection.cursor() as cursor:
+                sql = 'SELECT ID, Major_Name FROM majors LIMIT 16'
+                cursor.execute(sql)
                 myresult = cursor.fetchall()
                 print(tabulate(myresult, headers=['ID', 'Name']))
         except pymysql.Error as e:
@@ -99,4 +111,4 @@ class Student():
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
         return student_major
-Student.getAllStudentsAndMajors(Student)
+    connection.close()
