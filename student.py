@@ -45,9 +45,10 @@ class Student(object):
                 major = input("Enter the new major ID (1-16):  ")
                 sql = 'UPDATE student SET major = %s WHERE id = %s'
                 cursor.execute(sql, (major, name))
-                connection.commit()
+                major = self.getStudentMajor(name)
                 name = self.getStudentName(name)
-                major = self.getStudentMajor(major)
+                
+                connection.commit()
                 print(f"student {name}'s major  has been updated to {major}.")
         except pymysql.Error as e:
             print(f"There was an error updating the student {e}")
