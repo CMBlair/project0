@@ -24,9 +24,10 @@ class Student(object):
         try:
             with connection.cursor() as cursor:
                 sql = 'DELETE FROM student WHERE id = %s'
+                name = Student.getStudentName(studentID)
                 cursor.execute(sql, (studentID))
                 connection.commit()
-                print(f"student {studentID} has been deleted.")
+                print(f"student {name} has been deleted.")
         except pymysql.Error as e:
                 print(f"There was an error deleting the student {e}")
     def importStudents(fileName):
@@ -40,13 +41,13 @@ class Student(object):
             with connection.cursor() as cursor:
                 self.getAllStudentsAndMajors(self)
                 name = input("Enter the ID of the student you want to update:  ")
-                self.getAllMajors(self)
+                self.getAllMajors()
                 major = input("Enter the new major ID (1-16):  ")
                 sql = 'UPDATE student SET major = %s WHERE id = %s'
                 cursor.execute(sql, (major, name))
                 connection.commit()
                 name = self.getStudentName(name)
-                self = self.getStudentMajor(major)
+                major = self.getStudentMajor(major)
                 print(f"student {name}'s major  has been updated to {major}.")
         except pymysql.Error as e:
             print(f"There was an error updating the student {e}")
@@ -70,7 +71,7 @@ class Student(object):
                 print(tabulate(myresult, headers=['ID', 'Name']))
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
-    def getAllMajors(self):
+    def getAllMajors():
         try:
             with connection.cursor() as cursor:
                 sql = 'SELECT ID, Major_Name FROM majors LIMIT 16'
@@ -111,4 +112,3 @@ class Student(object):
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
         return student_major
-    connection.close()
