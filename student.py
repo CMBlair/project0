@@ -2,6 +2,7 @@
 from subprocess import ABOVE_NORMAL_PRIORITY_CLASS
 import pymysql
 import csv
+import re
 from tabulate import tabulate
 connection = pymysql.connect(host='localhost',
                              user='root',
@@ -66,10 +67,28 @@ class Student():
                 sql = 'SELECT courses.Course_ID, courses.Course_Name FROM major_courses JOIN courses WHERE courses.Course_ID = major_courses.Course_ID AND major_courses.id = (SELECT major FROM student WHERE id = %s)'
                 cursor.execute(sql, (id))
                 myresult = cursor.fetchall()
+                print("The courses that" + self.getStudentName(id) + "is required to take to graduate with a degree in" + self.getStudentMajor(id))
                 print(tabulate(myresult, headers=['Course ID', 'Course Name']))
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
-
-Student.showStudentInformation(Student)
-
-                
+    def getStudentName(id):
+        try:
+            with connection.cursor() as cursor:
+                sql = 'SELECT name FROM student WHERE id = %s'
+                cursor.execute(sql,(id))
+                name = str(cursor.fetchone())
+                name = re.sub(r"[^a-zA-Z0-9]+", ' ', name)
+        except pymysql.Error as e:
+            print(f'There was an error retrieving your request. {e}')
+        return name
+    def getStudentMajor(id):
+        try:
+            with connection.cursor() as cursor:
+                sql = 'SELECT majors.Major_Name FROM majors join student WHERE student.major = majors.ID AND  student.id = %s'
+                cursor.execute(sql,(id))
+                student_major = str(cursor.fetchone())
+                student_major = re.sub(r"[^a-zA-Z0-9]+", ' ', student_major)
+        except pymysql.Error as e:
+            print(f'There was an error retrieving your request. {e}')
+        return student_major
+Student.showStudentInformation(Student)               
