@@ -38,4 +38,3 @@ class menus():
     def showStudentInfo():
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         
-menus.studentRegistrationMenu()
