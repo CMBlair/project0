@@ -1,5 +1,3 @@
-
-from subprocess import ABOVE_NORMAL_PRIORITY_CLASS
 import pymysql
 import csv
 import re
@@ -25,7 +23,7 @@ class Student():
     def deleteStudent(studentID):
         try:
             with connection.cursor() as cursor:
-                sql = 'DELETE FROM student WHERE lower(name) = %s'
+                sql = 'DELETE FROM student WHERE id = %s'
                 cursor.execute(sql, (studentID))
                 connection.commit()
                 print(f"student {studentID} has been deleted.")
@@ -49,6 +47,16 @@ class Student():
                 print(f"student {name}'s major  has been updated to {major}.")
         except pymysql.Error as e:
             print(f"There was an error updating the student {e}")
+    def getAllStudentsAndMajors(self):
+        try:
+            with connection.cursor() as cursor:
+                sql = 'SELECT student.id, student.name, majors.Major_Name FROM student join majors on majors.ID = student.major'
+                cursor.execute(sql)
+                print("The current List of Students: ")
+                myresult = cursor.fetchall()
+                print(tabulate(myresult, headers=['ID', 'Name', 'Major']))
+        except pymysql.Error as e:
+            print(f'There was an error retrieving your request. {e}')
     def getAllStudents(self):
         try:
             with connection.cursor() as cursor:
@@ -91,4 +99,4 @@ class Student():
         except pymysql.Error as e:
             print(f'There was an error retrieving your request. {e}')
         return student_major
-Student.showStudentInformation(Student)               
+Student.getAllStudentsAndMajors(Student)
